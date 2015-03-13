@@ -21,6 +21,8 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
+import junit.runner.Version;
+
 import java.sql.SQLException;
 
 /**
@@ -51,6 +53,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase database, ConnectionSource connectionSource) {
+        //For older devices
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            onConfigure(database);
+        }
 
         try {
             TableUtils.createTable(connectionSource, Conversation.class);
@@ -71,6 +77,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         } else {
             database.execSQL("PRAGMA foreign_keys = ON");
         }
+    }
+
+    @Override
+    public void onOpen(android.database.sqlite.SQLiteDatabase db) {
+        super.onOpen(db);
+        Log.d(TAG, "onOpen");
     }
 
     @Override
